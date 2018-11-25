@@ -1,3 +1,16 @@
+This project is a fork of https://github.com/lightbend/config, its mainly purpose is to solve the problem : [Keep config item order in ConfigObject](https://github.com/lightbend/config/issues/365)
+
+Package the jar:
+
+```
+git checkout garyelephant.fea.keep_order
+sbt package
+```
+
+then you can find `config-1.3.3.jar` in `./config/target/`
+
+---
+
 Configuration library for JVM languages.
 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.typesafe/config/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.typesafe/config)
