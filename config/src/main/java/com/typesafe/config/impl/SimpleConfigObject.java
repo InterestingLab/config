@@ -481,8 +481,9 @@ final class SimpleConfigObject extends AbstractConfigObject implements Serializa
 
             int separatorCount = 0;
             String[] keys = keySet().toArray(new String[size()]);
-            Arrays.sort(keys, new RenderComparator());
+            // Arrays.sort(keys, new RenderComparator()); // we do not sort keys to keep key insertion order !!! Maybe we can make this configurable later
             for (String k : keys) {
+
                 AbstractConfigValue v;
                 v = value.get(k);
 
