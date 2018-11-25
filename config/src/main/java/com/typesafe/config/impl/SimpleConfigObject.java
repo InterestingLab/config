@@ -240,7 +240,6 @@ final class SimpleConfigObject extends AbstractConfigObject implements Serializa
     public Map<String, Object> unwrapped() {
         Map<String, Object> m = new LinkedHashMap<String, Object>();
         for (Map.Entry<String, AbstractConfigValue> e : value.entrySet()) {
-            System.out.println("value key: e.getKey(): " + e.getKey()); // debug
             m.put(e.getKey(), e.getValue().unwrapped());
         }
         return m;
