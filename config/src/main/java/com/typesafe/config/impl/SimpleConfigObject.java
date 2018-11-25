@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -111,7 +112,7 @@ final class SimpleConfigObject extends AbstractConfigObject implements Serializa
 
         if (v != null && next != null && v instanceof AbstractConfigObject) {
             v = ((AbstractConfigObject) v).withoutPath(next);
-            Map<String, AbstractConfigValue> updated = new HashMap<String, AbstractConfigValue>(
+            Map<String, AbstractConfigValue> updated = new LinkedHashMap<String, AbstractConfigValue>(
                     value);
             updated.put(key, v);
             return new SimpleConfigObject(origin(), updated, ResolveStatus.fromValues(updated
@@ -120,7 +121,7 @@ final class SimpleConfigObject extends AbstractConfigObject implements Serializa
             // can't descend, nothing to remove
             return this;
         } else {
-            Map<String, AbstractConfigValue> smaller = new HashMap<String, AbstractConfigValue>(
+            Map<String, AbstractConfigValue> smaller = new LinkedHashMap<String, AbstractConfigValue>(
                     value.size() - 1);
             for (Map.Entry<String, AbstractConfigValue> old : value.entrySet()) {
                 if (!old.getKey().equals(key))
@@ -141,7 +142,7 @@ final class SimpleConfigObject extends AbstractConfigObject implements Serializa
         if (value.isEmpty()) {
             newMap = Collections.singletonMap(key, (AbstractConfigValue) v);
         } else {
-            newMap = new HashMap<String, AbstractConfigValue>(value);
+            newMap = new LinkedHashMap<String, AbstractConfigValue>(value);
             newMap.put(key, (AbstractConfigValue) v);
         }
 
@@ -200,7 +201,7 @@ final class SimpleConfigObject extends AbstractConfigObject implements Serializa
 
     @Override
     public SimpleConfigObject replaceChild(AbstractConfigValue child, AbstractConfigValue replacement) {
-        HashMap<String, AbstractConfigValue> newChildren = new HashMap<String, AbstractConfigValue>(value);
+        LinkedHashMap<String, AbstractConfigValue> newChildren = new LinkedHashMap<String, AbstractConfigValue>(value);
         for (Map.Entry<String, AbstractConfigValue> old : newChildren.entrySet()) {
             if (old.getValue() == child) {
                 if (replacement != null)
@@ -237,8 +238,9 @@ final class SimpleConfigObject extends AbstractConfigObject implements Serializa
 
     @Override
     public Map<String, Object> unwrapped() {
-        Map<String, Object> m = new HashMap<String, Object>();
+        Map<String, Object> m = new LinkedHashMap<String, Object>();
         for (Map.Entry<String, AbstractConfigValue> e : value.entrySet()) {
+            System.out.println("value key: e.getKey(): " + e.getKey()); // debug
             m.put(e.getKey(), e.getValue().unwrapped());
         }
         return m;
@@ -257,7 +259,7 @@ final class SimpleConfigObject extends AbstractConfigObject implements Serializa
 
         boolean changed = false;
         boolean allResolved = true;
-        Map<String, AbstractConfigValue> merged = new HashMap<String, AbstractConfigValue>();
+        Map<String, AbstractConfigValue> merged = new LinkedHashMap<String, AbstractConfigValue>();
         Set<String> allKeys = new HashSet<String>();
         allKeys.addAll(this.keySet());
         allKeys.addAll(fallback.keySet());
@@ -312,14 +314,14 @@ final class SimpleConfigObject extends AbstractConfigObject implements Serializa
             AbstractConfigValue modified = modifier.modifyChildMayThrow(k, v);
             if (modified != v) {
                 if (changes == null)
-                    changes = new HashMap<String, AbstractConfigValue>();
+                    changes = new LinkedHashMap<String, AbstractConfigValue>();
                 changes.put(k, modified);
             }
         }
         if (changes == null) {
             return this;
         } else {
-            Map<String, AbstractConfigValue> modified = new HashMap<String, AbstractConfigValue>();
+            Map<String, AbstractConfigValue> modified = new LinkedHashMap<String, AbstractConfigValue>();
             boolean sawUnresolved = false;
             for (String k : keySet()) {
                 if (changes.containsKey(k)) {

@@ -8,7 +8,7 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -65,7 +65,7 @@ final class PropertiesParser {
     }
 
     private static <K, V> Map<Path, Object> getPathMap(Set<Map.Entry<K, V>> entries) {
-        Map<Path, Object> pathMap = new HashMap<Path, Object>();
+        Map<Path, Object> pathMap = new LinkedHashMap<Path, Object>();
         for (Map.Entry<K, V> entry : entries) {
             Object key = entry.getKey();
             if (key instanceof String) {
@@ -82,7 +82,7 @@ final class PropertiesParser {
 
     static AbstractConfigObject fromPathMap(ConfigOrigin origin,
             Map<?, ?> pathExpressionMap) {
-        Map<Path, Object> pathMap = new HashMap<Path, Object>();
+        Map<Path, Object> pathMap = new LinkedHashMap<Path, Object>();
         for (Map.Entry<?, ?> entry : pathExpressionMap.entrySet()) {
             Object keyObj = entry.getKey();
             if (!(keyObj instanceof String)) {
@@ -137,11 +137,11 @@ final class PropertiesParser {
         /*
          * Create maps for the object-valued values.
          */
-        Map<String, AbstractConfigValue> root = new HashMap<String, AbstractConfigValue>();
-        Map<Path, Map<String, AbstractConfigValue>> scopes = new HashMap<Path, Map<String, AbstractConfigValue>>();
+        Map<String, AbstractConfigValue> root = new LinkedHashMap<String, AbstractConfigValue>();
+        Map<Path, Map<String, AbstractConfigValue>> scopes = new LinkedHashMap<Path, Map<String, AbstractConfigValue>>();
 
         for (Path path : scopePaths) {
-            Map<String, AbstractConfigValue> scope = new HashMap<String, AbstractConfigValue>();
+            Map<String, AbstractConfigValue> scope = new LinkedHashMap<String, AbstractConfigValue>();
             scopes.put(path, scope);
         }
 
