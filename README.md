@@ -1,4 +1,10 @@
-This project is a fork of https://github.com/lightbend/config, its mainly purpose is to solve the problem : [Keep config item order in ConfigObject](https://github.com/lightbend/config/issues/365)
+This project is a fork of https://github.com/lightbend/config, its mainly purpose is to solve these problems : 
+
+* [Keep config item order in ConfigObject](https://github.com/lightbend/config/issues/365)
+
+* Change path token separator from `"."` to `"->""`.
+
+* Added `parseObjectForWaterdrop()` to parse config objects in `input`, `filter`, `output` for waterdrop.
 
 Package the jar:
 
