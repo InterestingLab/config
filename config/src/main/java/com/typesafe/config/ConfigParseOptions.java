@@ -21,6 +21,13 @@ package com.typesafe.config;
  *
  */
 public final class ConfigParseOptions {
+
+    /**
+     * a.b.c
+     * a->b->c
+     * */
+    public static final String pathTokenSeparator = "->";
+
     final ConfigSyntax syntax;
     final String originDescription;
     final boolean allowMissing;

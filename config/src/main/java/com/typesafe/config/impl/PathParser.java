@@ -3,13 +3,11 @@
  */
 package com.typesafe.config.impl;
 
-import com.typesafe.config.ConfigException;
-import com.typesafe.config.ConfigOrigin;
-import com.typesafe.config.ConfigSyntax;
-import com.typesafe.config.ConfigValueType;
+import com.typesafe.config.*;
 
 import java.io.StringReader;
 import java.util.*;
+
 
 final class PathParser {
     static class Element {
@@ -180,27 +178,32 @@ final class PathParser {
     }
 
     private static Collection<Token> splitTokenOnPeriod(Token t, ConfigSyntax flavor) {
+
         String tokenText = t.tokenText();
-        if (tokenText.equals(".")) {
+        if (tokenText.equals(ConfigParseOptions.pathTokenSeparator)) {
             return Collections.singletonList(t);
         }
-        String[] splitToken = tokenText.split("\\.");
+        String[] splitToken = tokenText.split(ConfigParseOptions.pathTokenSeparator);
         ArrayList<Token> splitTokens = new ArrayList<Token>();
         for (String s : splitToken) {
             if (flavor == ConfigSyntax.CONF)
                 splitTokens.add(Tokens.newUnquotedText(t.origin(), s));
             else
                 splitTokens.add(Tokens.newString(t.origin(), s, "\"" + s + "\""));
-            splitTokens.add(Tokens.newUnquotedText(t.origin(), "."));
+            splitTokens.add(Tokens.newUnquotedText(t.origin(), ConfigParseOptions.pathTokenSeparator));
         }
-        if (tokenText.charAt(tokenText.length() - 1) != '.')
+
+        if (! tokenText.substring(tokenText.length() - ConfigParseOptions.pathTokenSeparator.length(), tokenText.length()).equals(ConfigParseOptions.pathTokenSeparator)) {
             splitTokens.remove(splitTokens.size() - 1);
+        }
+
         return splitTokens;
     }
 
     private static void addPathText(List<Element> buf, boolean wasQuoted,
                                     String newText) {
-        int i = wasQuoted ? -1 : newText.indexOf('.');
+
+        int i = wasQuoted ? -1 : newText.indexOf(ConfigParseOptions.pathTokenSeparator);
         Element current = buf.get(buf.size() - 1);
         if (i < 0) {
             // add to current path element
@@ -215,13 +218,14 @@ final class PathParser {
             // then start a new element
             buf.add(new Element("", false));
             // recurse to consume remainder of newText
-            addPathText(buf, false, newText.substring(i + 1));
+            addPathText(buf, false, newText.substring(i + ConfigParseOptions.pathTokenSeparator.length()));
         }
     }
 
     // the idea is to see if the string has any chars or features
     // that might require the full parser to deal with.
     private static boolean looksUnsafeForFastParser(String s) {
+        // TODO: maybe we should rewrite this function using ConfigParseOptions.pathTokenSeparator
         boolean lastWasDot = true; // start of path is also a "dot"
         int len = s.length();
         if (s.isEmpty())
@@ -256,6 +260,7 @@ final class PathParser {
     }
 
     private static Path fastPathBuild(Path tail, String s, int end) {
+        // TODO: maybe we should rewrite this function using ConfigParseOptions.pathTokenSeparator
         // lastIndexOf takes last index it should look at, end - 1 not end
         int splitAt = s.lastIndexOf('.', end - 1);
         ArrayList<Token> tokens = new ArrayList<Token>();

@@ -6,6 +6,7 @@ package com.typesafe.config.impl;
 import java.util.*;
 
 import com.typesafe.config.ConfigException;
+import com.typesafe.config.ConfigParseOptions;
 
 final class Path {
 
@@ -198,7 +199,7 @@ final class Path {
         else
             sb.append(first);
         if (remainder != null) {
-            sb.append(".");
+            sb.append(ConfigParseOptions.pathTokenSeparator);
             remainder.appendToStringBuilder(sb);
         }
     }
