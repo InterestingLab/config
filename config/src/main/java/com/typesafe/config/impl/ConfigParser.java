@@ -100,7 +100,15 @@ final class ConfigParser {
             if (n instanceof ConfigNodeSimpleValue) {
                 v = ((ConfigNodeSimpleValue) n).value();
             } else if (n instanceof ConfigNodeObject) {
-                v = parseObject((ConfigNodeObject)n);
+
+                Path path = pathStack.peekFirst();
+
+                if (path != null && (path.first().equals("input") || path.first().equals("filter") || path.first().equals("output"))) {
+                    v = parseObjectForWaterdrop((ConfigNodeObject)n);
+                } else {
+                    v = parseObject((ConfigNodeObject)n);
+                }
+
             } else if (n instanceof ConfigNodeArray) {
                 v = parseArray((ConfigNodeArray)n);
             } else if (n instanceof ConfigNodeConcatenation) {
@@ -213,6 +221,155 @@ final class ConfigParser {
                 }
             }
         }
+
+
+        private SimpleConfigList parseObjectForWaterdrop(ConfigNodeObject n) {
+
+            Map<String, AbstractConfigValue> values = new LinkedHashMap<String, AbstractConfigValue>();
+            List<AbstractConfigValue> valuesList = new ArrayList<AbstractConfigValue>();
+            SimpleConfigOrigin objectOrigin = lineOrigin();
+            boolean lastWasNewline = false;
+
+            ArrayList<AbstractConfigNode> nodes = new ArrayList<AbstractConfigNode>(n.children());
+            List<String> comments = new ArrayList<String>();
+            for (int i = 0; i < nodes.size(); i++) {
+                AbstractConfigNode node = nodes.get(i);
+                if (node instanceof ConfigNodeComment) {
+                    lastWasNewline = false;
+                    comments.add(((ConfigNodeComment) node).commentText());
+                } else if (node instanceof ConfigNodeSingleToken && Tokens.isNewline(((ConfigNodeSingleToken) node).token())) {
+                    lineNumber++;
+                    if (lastWasNewline) {
+                        // Drop all comments if there was a blank line and start a new comment block
+                        comments.clear();
+                    }
+                    lastWasNewline = true;
+                } else if (flavor != ConfigSyntax.JSON && node instanceof ConfigNodeInclude) {
+                    parseInclude(values, (ConfigNodeInclude)node);
+                    lastWasNewline = false;
+                } else if (node instanceof ConfigNodeField) {
+                    lastWasNewline = false;
+                    Path path = ((ConfigNodeField) node).path().value();
+                    comments.addAll(((ConfigNodeField) node).comments());
+
+                    // path must be on-stack while we parse the value
+                    pathStack.push(path);
+                    if (((ConfigNodeField) node).separator() == Tokens.PLUS_EQUALS) {
+                        // we really should make this work, but for now throwing
+                        // an exception is better than producing an incorrect
+                        // result. See
+                        // https://github.com/lightbend/config/issues/160
+                        if (arrayCount > 0)
+                            throw parseError("Due to current limitations of the config parser, += does not work nested inside a list. "
+                                    + "+= expands to a ${} substitution and the path in ${} cannot currently refer to list elements. "
+                                    + "You might be able to move the += outside of the list and then refer to it from inside the list with ${}.");
+
+                        // because we will put it in an array after the fact so
+                        // we want this to be incremented during the parseValue
+                        // below in order to throw the above exception.
+                        arrayCount += 1;
+                    }
+
+                    AbstractConfigNodeValue valueNode;
+                    AbstractConfigValue newValue;
+
+                    valueNode = ((ConfigNodeField) node).value();
+
+                    // comments from the key token go to the value token
+                    newValue = parseValue(valueNode, comments);
+
+                    if (((ConfigNodeField) node).separator() == Tokens.PLUS_EQUALS) {
+                        arrayCount -= 1;
+
+                        List<AbstractConfigValue> concat = new ArrayList<AbstractConfigValue>(2);
+                        AbstractConfigValue previousRef = new ConfigReference(newValue.origin(),
+                                new SubstitutionExpression(fullCurrentPath(), true /* optional */));
+                        AbstractConfigValue list = new SimpleConfigList(newValue.origin(),
+                                Collections.singletonList(newValue));
+                        concat.add(previousRef);
+                        concat.add(list);
+                        newValue = ConfigConcatenation.concatenate(concat);
+                    }
+
+                    // Grab any trailing comments on the same line
+                    if (i < nodes.size() - 1) {
+                        i++;
+                        while (i < nodes.size()) {
+                            if (nodes.get(i) instanceof ConfigNodeComment) {
+                                ConfigNodeComment comment = (ConfigNodeComment) nodes.get(i);
+                                newValue = newValue.withOrigin(newValue.origin().appendComments(
+                                        Collections.singletonList(comment.commentText())));
+                                break;
+                            } else if (nodes.get(i) instanceof ConfigNodeSingleToken) {
+                                ConfigNodeSingleToken curr = (ConfigNodeSingleToken) nodes.get(i);
+                                if (curr.token() == Tokens.COMMA || Tokens.isIgnoredWhitespace(curr.token())) {
+                                    // keep searching, as there could still be a comment
+                                } else {
+                                    i--;
+                                    break;
+                                }
+                            } else {
+                                i--;
+                                break;
+                            }
+                            i++;
+                        }
+                    }
+
+                    pathStack.pop();
+
+                    String key = path.first();
+                    Path remaining = path.remainder();
+
+                    if (remaining == null) {
+                        AbstractConfigValue existing = values.get(key);
+                        if (existing != null) {
+                            // In strict JSON, dups should be an error; while in
+                            // our custom config language, they should be merged
+                            // if the value is an object (or substitution that
+                            // could become an object).
+
+                            if (flavor == ConfigSyntax.JSON) {
+                                throw parseError("JSON does not allow duplicate fields: '"
+                                        + key
+                                        + "' was already seen at "
+                                        + existing.origin().description());
+                            } else {
+                                newValue = newValue.withFallback(existing);
+                            }
+                        }
+
+                        Map<String, String> m = Collections.singletonMap("plugin_name", key);
+                        newValue = newValue.withFallback(ConfigValueFactory.fromMap(m));
+
+                        values.put(key, newValue);
+                        valuesList.add(newValue);
+                    } else {
+                        if (flavor == ConfigSyntax.JSON) {
+                            throw new ConfigException.BugOrBroken(
+                                    "somehow got multi-element path in JSON mode");
+                        }
+
+                        AbstractConfigObject obj = createValueUnderPath(
+                                remaining, newValue);
+                        AbstractConfigValue existing = values.get(key);
+                        if (existing != null) {
+                            obj = obj.withFallback(existing);
+                        }
+
+                        Map<String, String> m = Collections.singletonMap("plugin_name", key);
+                        obj = obj.withFallback(ConfigValueFactory.fromMap(m));
+
+                        values.put(key, obj);
+                        valuesList.add(obj);
+                    }
+                }
+            }
+
+            return new SimpleConfigList(objectOrigin, valuesList);
+        }
+
+
 
         private AbstractConfigObject parseObject(ConfigNodeObject n) {
             Map<String, AbstractConfigValue> values = new LinkedHashMap<String, AbstractConfigValue>();
