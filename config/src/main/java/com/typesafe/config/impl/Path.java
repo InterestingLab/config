@@ -185,7 +185,7 @@ final class Path {
         for (int i = 0; i < length; ++i) {
             char c = s.charAt(i);
 
-            if (Character.isLetterOrDigit(c) || c == '-' || c == '_')
+            if (Character.isLetterOrDigit(c) || c == '-' || c == '_' || c == '.')
                 continue;
             else
                 return true;
