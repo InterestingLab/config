@@ -242,9 +242,9 @@ final class ResolveSource {
             if (old == root && replacement instanceof Container) {
                 return new ResolveSource(rootMustBeObj((Container) replacement));
             } else {
-                throw new ConfigException.BugOrBroken("replace in parent not possible " + old + " with " + replacement
-                        + " in " + this);
-                // return this;
+//                throw new ConfigException.BugOrBroken("replace in parent not possible " + old + " with " + replacement
+//                        + " in " + this);
+                 return this;
             }
         }
     }
