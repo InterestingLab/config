@@ -6,7 +6,14 @@ This project is a fork of https://github.com/lightbend/config, its mainly purpos
 
 * Added `parseObjectForWaterdrop()` to parse config objects in `input`, `filter`, `output` for waterdrop.
 
-Package the jar:
+
+If you want to do some test, please see:
+
+* Test Main Class: config/src/test/java/interestinglab/CompleteTests.java
+
+* Config File Example: config/src/test/resources/interestinglab/variables.conf
+
+If you want to Package the jar:
 
 ```
 git checkout garyelephant.fea.keep_order
