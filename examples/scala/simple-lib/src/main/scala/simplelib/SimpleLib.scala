@@ -1,6 +1,7 @@
 package simplelib
 
 import com.typesafe.config._
+import com.typesafe.config.waterdrop.{Config, ConfigFactory}
 
 // Whenever you write a library, allow people to supply a Config but
 // also default to ConfigFactory.load if they don't supply one.

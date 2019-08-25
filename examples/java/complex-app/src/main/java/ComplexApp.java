@@ -1,4 +1,6 @@
-import com.typesafe.config.*;
+import com.typesafe.config.waterdrop.Config;
+import com.typesafe.config.waterdrop.ConfigException;
+import com.typesafe.config.waterdrop.ConfigFactory;
 import simplelib.*;
 
 class ComplexApp {

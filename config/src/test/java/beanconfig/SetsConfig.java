@@ -1,9 +1,9 @@
 package beanconfig;
 
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigMemorySize;
-import com.typesafe.config.ConfigObject;
-import com.typesafe.config.ConfigValue;
+import com.typesafe.config.waterdrop.Config;
+import com.typesafe.config.waterdrop.ConfigMemorySize;
+import com.typesafe.config.waterdrop.ConfigObject;
+import com.typesafe.config.waterdrop.ConfigValue;
 
 import java.time.Duration;
 import java.util.Set;

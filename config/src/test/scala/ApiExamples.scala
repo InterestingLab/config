@@ -4,6 +4,8 @@
 import org.junit.Assert._
 import org.junit._
 import com.typesafe.config._
+import com.typesafe.config.waterdrop.{Config, ConfigFactory, ConfigObject, ConfigValue}
+
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 import language.implicitConversions

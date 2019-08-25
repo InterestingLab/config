@@ -1,4 +1,5 @@
 import com.typesafe.config._
+import com.typesafe.config.waterdrop.ConfigFactory
 import simplelib._
 
 object SimpleApp extends App {

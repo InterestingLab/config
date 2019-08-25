@@ -6,6 +6,8 @@ This project is a fork of https://github.com/lightbend/config, its mainly purpos
 
 * Added `parseObjectForWaterdrop()` to parse config objects in `input`, `filter`, `output` for waterdrop.
 
+* Change package name to avoid implementation conflict when using this code with the official typesafe config used by Apache Flink.
+
 
 If you want to do some test, please see:
 

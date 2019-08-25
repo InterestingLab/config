@@ -1,4 +1,5 @@
 import com.typesafe.config._
+import com.typesafe.config.waterdrop.{Config, ConfigException, ConfigFactory}
 import simplelib._
 
 object ComplexApp extends App {

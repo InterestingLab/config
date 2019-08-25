@@ -1,10 +1,12 @@
 /**
  *   Copyright (C) 2011 Typesafe Inc. <http://typesafe.com>
  */
-import com.typesafe.config.Config
-import com.typesafe.config.ConfigFactory
-import com.typesafe.config.ConfigException
+import com.typesafe.config.waterdrop.ConfigFactory
+import com.typesafe.config.waterdrop.ConfigException
 import java.util.concurrent.TimeUnit
+
+import com.typesafe.config.waterdrop.{Config, ConfigException, ConfigFactory}
+
 import scala.annotation.tailrec
 
 object Util {

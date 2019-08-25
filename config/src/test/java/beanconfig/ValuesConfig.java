@@ -2,10 +2,10 @@ package beanconfig;
 
 import java.util.Map;
 
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigList;
-import com.typesafe.config.ConfigObject;
-import com.typesafe.config.ConfigValue;
+import com.typesafe.config.waterdrop.Config;
+import com.typesafe.config.waterdrop.ConfigList;
+import com.typesafe.config.waterdrop.ConfigObject;
+import com.typesafe.config.waterdrop.ConfigValue;
 
 // test bean for various "uncooked" values
 public class ValuesConfig {

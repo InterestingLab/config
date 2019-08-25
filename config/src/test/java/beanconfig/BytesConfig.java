@@ -1,6 +1,6 @@
 package beanconfig;
 
-import com.typesafe.config.ConfigMemorySize;
+import com.typesafe.config.waterdrop.ConfigMemorySize;
 
 public class BytesConfig {
 

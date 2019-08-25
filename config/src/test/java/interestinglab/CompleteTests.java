@@ -1,9 +1,9 @@
 package interestinglab;
 
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
-import com.typesafe.config.ConfigRenderOptions;
-import com.typesafe.config.ConfigResolveOptions;
+import com.typesafe.config.waterdrop.Config;
+import com.typesafe.config.waterdrop.ConfigFactory;
+import com.typesafe.config.waterdrop.ConfigRenderOptions;
+import com.typesafe.config.waterdrop.ConfigResolveOptions;
 
 import java.io.File;
 import java.net.URL;

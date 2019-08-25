@@ -1,7 +1,7 @@
 package beanconfig;
 
 
-import com.typesafe.config.Optional;
+import com.typesafe.config.waterdrop.Optional;
 
 public class ObjectsConfig {
     public static class ValueObject {

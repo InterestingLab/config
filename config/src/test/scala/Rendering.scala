@@ -1,5 +1,5 @@
-import com.typesafe.config.ConfigFactory
-import com.typesafe.config.ConfigRenderOptions
+import com.typesafe.config.waterdrop.ConfigFactory
+import com.typesafe.config.waterdrop.{ConfigFactory, ConfigRenderOptions}
 
 object RenderExample extends App {
     val formatted = args.contains("--formatted")
