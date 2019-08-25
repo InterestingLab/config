@@ -18,7 +18,7 @@ If you want to do some test, please see:
 If you want to Package the jar:
 
 ```
-git checkout garyelephant.fea.keep_order
+git checkout garyelephant.fea.changed_package_name
 sbt package
 ```
 
