@@ -19,6 +19,8 @@ If you want to Package the jar:
 
 ```
 git checkout garyelephant.fea.changed_package_name
+rm -rf ./target
+rm -rf ./config/target
 sbt package
 ```
 
