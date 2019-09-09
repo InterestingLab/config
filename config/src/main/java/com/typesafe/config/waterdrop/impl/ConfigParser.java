@@ -103,7 +103,13 @@ final class ConfigParser {
 
                 Path path = pathStack.peekFirst();
 
-                if (path != null && (path.first().equals("input") || path.first().equals("filter") || path.first().equals("output"))) {
+                if (path != null
+                  && (path.first().equals("input")
+                    || path.first().equals("filter")
+                    || path.first().equals("output")
+                    || path.first().equals("source")
+                    || path.first().equals("transform")
+                    || path.first().equals("sink"))) {
                     v = parseObjectForWaterdrop((ConfigNodeObject)n);
                 } else {
                     v = parseObject((ConfigNodeObject)n);
