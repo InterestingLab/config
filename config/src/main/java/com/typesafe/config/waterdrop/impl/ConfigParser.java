@@ -328,22 +328,6 @@ final class ConfigParser {
                     Path remaining = path.remainder();
 
                     if (remaining == null) {
-                        AbstractConfigValue existing = values.get(key);
-                        if (existing != null) {
-                            // In strict JSON, dups should be an error; while in
-                            // our custom config language, they should be merged
-                            // if the value is an object (or substitution that
-                            // could become an object).
-
-                            if (flavor == ConfigSyntax.JSON) {
-                                throw parseError("JSON does not allow duplicate fields: '"
-                                        + key
-                                        + "' was already seen at "
-                                        + existing.origin().description());
-                            } else {
-                                newValue = newValue.withFallback(existing);
-                            }
-                        }
 
                         Map<String, String> m = Collections.singletonMap("plugin_name", key);
                         newValue = newValue.withFallback(ConfigValueFactory.fromMap(m));
@@ -358,10 +342,6 @@ final class ConfigParser {
 
                         AbstractConfigObject obj = createValueUnderPath(
                                 remaining, newValue);
-                        AbstractConfigValue existing = values.get(key);
-                        if (existing != null) {
-                            obj = obj.withFallback(existing);
-                        }
 
                         Map<String, String> m = Collections.singletonMap("plugin_name", key);
                         obj = obj.withFallback(ConfigValueFactory.fromMap(m));
